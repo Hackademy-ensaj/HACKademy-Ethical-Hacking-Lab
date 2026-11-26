@@ -5,7 +5,7 @@ Tout se fait sur une cible locale (`127.0.0.1`) lancée en une commande.
 
 ## Démarrage rapide
 ```bash
-git clone https://github.com/<ton-compte>/HACKademy-Ethical-Hacking-Lab.git
+git clone https://github.com/Hackademy-ensaj./HACKademy-Ethical-Hacking-Lab.git
 cd HACKademy-Ethical-Hacking-Lab
 bash setup.sh          # installe les outils
 bash start-target.sh   # lance la cible (laisser ce terminal ouvert)
