@@ -1,6 +1,6 @@
 # HACKademy Ethical Hacking Lab
 
-Lab d'initiation à l'ethical hacking, **100 % WSL 1**, sans Docker ni Flask.
+Lab d'initiation à l'ethical hacking, **100 % WSL 1**
 Tout se fait sur une cible locale (`127.0.0.1`) lancée en une commande.
 
 ## Démarrage rapide
@@ -27,5 +27,4 @@ Chaque module : **Learn → Practice → Challenge**.
 Ne scanner que : `127.0.0.1` (la cible du lab) et `scanme.nmap.org` (autorisé par le projet Nmap, usage raisonnable).
 Toute autre machine sans autorisation écrite est **interdite**.
 
-## Limites WSL 1
-Utiliser `nmap -sT -Pn` (scan connect). Les scans SYN `-sS`, la détection d'OS `-O` et le ping ICMP brut ne fonctionnent pas.
+
