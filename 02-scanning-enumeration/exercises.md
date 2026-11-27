@@ -2,98 +2,64 @@
 
 ## Level 2 — Practice
 
-### Exercice 1 — Reconnaître des états de ports
-**But :** lire un résultat de scan sans le confondre avec une preuve de vulnérabilité.
+Tous les scans de cette section sont limités à `127.0.0.1`, sauf l'exercice 3 qui utilise uniquement `scanme.nmap.org` avec le scan rapide demandé. Vérifie que le serveur du lab tourne avant de commencer. Sous WSL 1, certains ports visibles peuvent appartenir à Windows et non au lab : consigne cette limite dans tes observations.
 
-**Énoncé :** lance un scan TCP limité sur `127.0.0.1`, avec une plage choisie parmi celles expliquées dans la leçon. Si tu es sous WSL 1, garde à l'esprit que des ports Windows peuvent apparaître.
+### Exercice 1 — Compter les ports du lab
+**But :** établir quels ports TCP du lab sont accessibles dans la plage demandée et compter les ports ouverts observés.
+
+**Énoncé :** scanne les ports de `1` à `10000` sur `127.0.0.1`. Relève le nombre de ports marqués `open` et leurs numéros. Le résultat dépend de ton environnement ; n'inscris pas un nombre supposé dans le dépôt.
 
 **Méthode :**
-1. Lance la cible locale dans un autre terminal.
-2. Utilise `nmap -sT -Pn` et une plage limitée.
-3. Repère les colonnes `PORT`, `STATE` et `SERVICE`.
-4. Répète avec `-sV` pour comparer l'identification du service.
+1. Lance la cible locale dans un autre terminal et laisse-la fonctionner.
+2. Exécute `nmap -sT -Pn -p 1-10000 127.0.0.1`.
+3. Compte uniquement les lignes dont l'état est `open`, sans confondre les ports `closed` ou `filtered` avec des ports ouverts.
+4. Note la commande, le nombre compté et tout résultat qui pourrait venir de Windows sous WSL 1.
 
-**Observe et note :** la commande exacte, les états indiqués et la différence entre l'estimation de service et la version détectée. Ne conclus pas qu'un port est vulnérable uniquement parce qu'il est ouvert.
+**Observe et note :** quelle plage a été testée ? Que signifie exactement `open` ? Pourquoi le résultat d'un scan ne prouve-t-il pas qu'un service est vulnérable ?
 
 <details>
 <summary>Indice 1</summary>
 
-`-sT` sélectionne le type de scan TCP et `-Pn` évite l'étape préalable de détection par ping.
+La plage est donnée par `-p 1-10000`. `-sT` utilise une connexion TCP complète et `-Pn` évite l'étape préalable de détection par ping.
 </details>
 
 <details>
 <summary>Indice 2</summary>
 
-Compare la colonne `SERVICE` avant et après `-sV`. Sous WSL 1, vérifie si un résultat peut venir de Windows plutôt que du lab.
+Compte les lignes `open` du tableau des ports. Un port ouvert indique qu'une application répond ; il ne constitue pas à lui seul un constat de vulnérabilité.
 </details>
 
-### Exercice 2 — Comparer la portée d'un scan
-**But :** comprendre qu'une option change le nombre de ports testés.
+### Exercice 2 — Lire une bannière du lab
+**But :** observer le texte envoyé par le service local et repérer les informations éventuellement divulguées.
 
-**Énoncé :** sur `127.0.0.1`, compare un scan rapide et un scan portant sur tous les ports TCP. Ne lance pas ces commandes sur une autre cible.
+**Énoncé :** identifie les ports locaux, puis utilise le client Python de la leçon sur le port TCP de la bannière du lab. Lis la bannière et décris ce qu'elle révèle sans recopier son flag dans ce fichier ni dans tes notes partagées.
 
 **Méthode :**
-1. Lance `nmap -sT -Pn -F 127.0.0.1`.
-2. Lance `nmap -sT -Pn -p- 127.0.0.1`.
-3. Compare le temps et le périmètre des résultats.
+1. Vérifie que le service du lab est démarré sur `127.0.0.1`.
+2. Lance le client Python présenté dans la leçon et saisis le port local identifié pour le service de bannière.
+3. Observe le texte reçu et distingue le nom du service, les détails de version et les autres éléments.
+4. Dans tes notes personnelles, explique pourquoi une bannière trop détaillée peut augmenter le risque et propose une mesure de réduction de l'information divulguée.
 
-**Observe et note :** quelle commande examine moins de ports ? Pourquoi un scan plus large peut-il prendre plus de temps ? Note aussi si les résultats sont cohérents avec la cible que tu as lancée.
+**Observe et note :** le texte est-il envoyé spontanément à la connexion ? Quelles catégories d'information y figurent ? Ne publie pas la bannière complète ni la réponse du challenge.
 
-<details>
-<summary>Indice 1</summary>
+### Exercice 3 — Scan rapide de `scanme.nmap.org`
+**But :** comprendre le périmètre d'un scan rapide et modéré sur l'hôte de démonstration explicitement autorisé par le projet Nmap.
 
-`-F` demande un scan rapide d'un ensemble réduit de ports ; `-p-` étend le scan à tous les ports TCP.
-</details>
-
-<details>
-<summary>Indice 2</summary>
-
-Un scan plus large ne signifie pas automatiquement une meilleure explication. Relie chaque résultat à l'option utilisée.
-</details>
-
-### Exercice 3 — Observer une bannière
-**But :** examiner les informations qu'un service envoie à la connexion.
-
-**Énoncé :** utilise le client Python de la leçon. Indique au programme un port trouvé sur la cible locale et observe la réponse, s'il y en a une. Dans tes explications, remplace le numéro par `PORT`.
+**Énoncé :** effectue uniquement le scan rapide `-F` demandé sur `scanme.nmap.org`. N'ajoute pas d'autres options de scan et ne lance pas de scan étendu sur cet hôte.
 
 **Méthode :**
-1. Copie le script dans un fichier de travail personnel ou exécute-le depuis le terminal.
-2. Saisis un port local que tu as observé.
-3. Lis les lignes du programme et relie-les aux données reçues.
-4. Ne publie ni la bannière complète ni une réponse de challenge dans ce fichier.
+1. Exécute `nmap -F scanme.nmap.org` une seule fois.
+2. Lis les ports et états retournés, si le service est disponible.
+3. Note que le résultat dépend du moment, du réseau et de la configuration de la cible ; il peut évoluer.
 
-**Observe et note :** le service envoie-t-il un texte spontanément ? Quelles informations générales une bannière pourrait-elle divulguer ? Quelle mesure limiterait cette divulgation ?
-
-<details>
-<summary>Indice 1</summary>
-
-Le programme se connecte à `127.0.0.1`, lit un nombre limité d'octets, puis les décode en texte.
-</details>
-
-<details>
-<summary>Indice 2</summary>
-
-Si la connexion fonctionne mais que le texte est vide, le service peut simplement ne pas envoyer de bannière spontanément.
-</details>
+**Observe et note :** que fait l'option `-F` ? En quoi le périmètre diffère-t-il d'un scan de tous les ports ? N'interprète pas un résultat observé comme une autorisation de tester d'autres hôtes.
 
 ## Level 3 — Challenge
 
-**But :** réunir scan, identification et lecture d'une bannière sans exposer de réponse.
+**But :** retrouver le flag présent dans la bannière du service du lab, puis expliquer quelle information la bannière divulgue et proposer une correction défensive.
 
-**Énoncé :** identifie un service sur la cible du lab, puis détermine si sa bannière révèle des détails qui ne devraient pas être publics. Reste sur `127.0.0.1`.
+**Énoncé :** utilise les observations de scan et la méthode de lecture de bannière pour trouver le flag de la bannière sur `127.0.0.1` uniquement. Décris ensuite une correction qui réduirait ou supprimerait les détails sensibles de la bannière. Ne publie pas la valeur du flag ni la bannière complète dans les fichiers du dépôt.
 
-**Méthode :** commence par une plage limitée, vérifie l'état, puis utilise une méthode adaptée au service trouvé. Sous WSL 1, écarte les résultats qui semblent appartenir à Windows.
+**Méthode :** identifie un port ouvert du lab, connecte-toi au service local approprié, examine le texte reçu et formule une recommandation de configuration. Sous WSL 1, vérifie que le port observé appartient bien au lab.
 
-**Observe et note :** note ta démarche, les options utilisées et une recommandation de protection dans tes notes personnelles. Le fichier du dépôt ne doit contenir ni flag ni solution.
-
-<details>
-<summary>Indice 1</summary>
-
-`-sV` peut aider à identifier un service. Une connexion TCP simple peut ensuite permettre d'observer ce que le service envoie.
-</details>
-
-<details>
-<summary>Indice 2</summary>
-
-Une bannière trop détaillée peut être réduite ou supprimée dans la configuration du service. Distingue l'observation de la conclusion de sécurité.
-</details>
+**Observe et note :** garde le flag uniquement dans tes notes personnelles, avec la commande, les observations et la correction proposée. N'effectue aucun essai d'identifiants sur `scanme.nmap.org` ni sur une autre machine.

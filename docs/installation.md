@@ -2,7 +2,7 @@
 1. Windows : activer WSL, installer **Ubuntu** depuis le Microsoft Store. Vérifier la version dans PowerShell : `wsl -l -v` (VERSION = 1).
 2. Ouvrir Ubuntu, puis :
 ```bash
-git clone https://github.com/<ton-compte>/HACKademy-Ethical-Hacking-Lab.git
+git clone https://github.com/Hackademy-ensaj/HACKademy-Ethical-Hacking-Lab.git
 cd HACKademy-Ethical-Hacking-Lab
 bash setup.sh
 bash start-target.sh

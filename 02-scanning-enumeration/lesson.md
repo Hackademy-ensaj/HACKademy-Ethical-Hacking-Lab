@@ -3,10 +3,10 @@
 ## Level 1 — Learn
 
 ### Objectifs
-À la fin de cette leçon, tu sauras expliquer ce qu'est un port et un service, interpréter les états `open`, `closed` et `filtered`, lancer un scan limité avec `nmap`, lire une bannière et comprendre un petit client TCP écrit avec `socket`.
+À la fin de cette leçon, tu sauras expliquer ce qu'est un port et un service, interpréter les états `open`, `closed` et `filtered`, lancer un scan limité avec `nmap`, lire une bannière et comparer la portée d'un scan rapide et d'un scan défini par une plage.
 
 ### Prérequis
-Tu dois savoir ouvrir un terminal et lancer la cible locale comme indiqué dans le guide d'installation. `127.0.0.1` désigne ta propre machine. Ne scanne que `127.0.0.1` et, avec modération, `scanme.nmap.org`.
+Tu dois savoir ouvrir un terminal et lancer la cible locale comme indiqué dans le guide d'installation. `127.0.0.1` désigne ta propre machine. Ne scanne que `127.0.0.1` et, avec modération, `scanme.nmap.org` avec l'option `-F` indiquée plus bas. Les essais d'identifiants, s'il y en a dans un autre module, ne sont autorisés que sur le lab local.
 
 ### Port, service et états
 - **Port :** numéro logique associé à une communication réseau. Analogie : le numéro d'un appartement dans un immeuble.
@@ -18,27 +18,27 @@ Tu dois savoir ouvrir un terminal et lancer la cible locale comme indiqué dans 
 - **Exemple :** un port ouvert indique qu'un service répond, pas qu'il est vulnérable.
 
 ### `nmap`
-`nmap` est un outil qui vérifie des ports et peut essayer d'identifier les services. Sous WSL 1, utilise souvent `-sT -Pn`. WSL 1 peut aussi afficher des ports de Windows : vérifie que le service répond bien depuis la cible attendue avant de conclure.
+`nmap` est un outil qui vérifie des ports et peut essayer d'identifier les services. Sous WSL 1, utilise souvent `-sT -Pn`. WSL 1 peut aussi afficher des ports de Windows : vérifie que le service observé appartient bien au lab avant de tirer une conclusion.
 
 ```bash
 nmap -sT -Pn 127.0.0.1
-nmap -sT -Pn -p 1-1000 127.0.0.1
+nmap -sT -Pn -p 1-10000 127.0.0.1
 nmap -sT -Pn -p- 127.0.0.1
-nmap -sT -Pn -sV -p 1-1000 127.0.0.1
-nmap -sT -Pn --script http-headers -p 1-1000 127.0.0.1
-nmap -sT -Pn -F scanme.nmap.org
+nmap -sT -Pn -sV -p 1-10000 127.0.0.1
+nmap -sT -Pn --script http-headers -p 1-10000 127.0.0.1
+nmap -F scanme.nmap.org
 ```
 
 Explication des options et arguments :
 - `nmap` : lance le scanner.
 - `-sT` : utilise une connexion TCP complète pour tester les ports. C'est souvent compatible avec WSL 1.
 - `-Pn` : ne fait pas d'étape préalable de détection par ping ; traite l'hôte comme actif. Cela ne rend pas le scan invisible.
-- `-p 1-1000` : teste la plage de ports indiquée. `-p` introduit les ports ; `1-1000` est une plage illustrative, pas une liste des ports du lab.
+- `-p 1-10000` : teste les ports de 1 à 10000 inclus. `-p` introduit les ports et `1-10000` désigne la plage utilisée dans les exercices du lab.
 - `-p-` : teste tous les ports TCP. Cela prend plus de temps ; utilise-le seulement sur la cible autorisée.
 - `-sV` : demande à `nmap` d'essayer d'identifier les services et leurs versions.
-- `--script http-headers` : lance le script NSE nommé `http-headers`, conçu pour lire des en-têtes HTTP. Un script peut envoyer des requêtes supplémentaires.
-- `-F` : scan rapide d'un ensemble réduit de ports courants.
-- `127.0.0.1` et `scanme.nmap.org` : cibles. Ne remplace pas ces valeurs par une machine non autorisée.
+- `--script http-headers` : lance le script NSE nommé `http-headers`, conçu pour lire des en-têtes HTTP. Un script peut envoyer des requêtes supplémentaires ; limite-le à la cible locale.
+- `-F` : scan rapide d'un ensemble réduit de ports courants. Dans ce parcours, l'exercice correspondant l'utilise sur `scanme.nmap.org`.
+- `127.0.0.1` et `scanme.nmap.org` : cibles autorisées pour les actions indiquées. Ne remplace pas ces valeurs par une machine non autorisée.
 
 **Sortie illustrative, pas une sortie réelle du lab :**
 ```text
@@ -60,9 +60,9 @@ PORT    STATE     SERVICE
 - **Définition :** texte envoyé par un service pour s'identifier ou accueillir une connexion.
 - **Analogie :** une enseigne à l'entrée d'un magasin.
 - **Pourquoi en sécurité :** une bannière trop bavarde peut révéler le logiciel ou sa version et aider à cibler une attaque.
-- **Exemple :** une connexion à un service TCP peut recevoir une ligne de texte avant toute autre commande. Dans les explications, le numéro du service est écrit `PORT` pour ne pas révéler la réponse d'un exercice.
+- **Exemple :** une connexion à un service TCP peut recevoir une ligne de texte avant toute autre commande. Dans les explications, le numéro du service est écrit `PORT` pour ne pas révéler la réponse du challenge.
 
-Pour le service HTTP local, `curl -i http://127.0.0.1:8080/` affiche la réponse HTTP. Pour lire une bannière TCP générique, le client Python ci-dessous se connecte uniquement à la boucle locale.
+Pour le service HTTP local, `curl -i http://127.0.0.1:8080/` affiche la réponse HTTP. Pour lire une bannière TCP générique, le client Python ci-dessous se connecte uniquement à la boucle locale :
 
 ### Client Python avec `socket`, ligne par ligne
 ```python
@@ -89,7 +89,7 @@ connexion.close()
 ```text
 [texte envoyé par le service, s'il en envoie un]
 ```
-Une sortie vide peut indiquer que le service n'envoie pas de bannière spontanée, ou que la connexion a été fermée. Une erreur de délai indique qu'aucune donnée n'a été reçue dans le temps prévu.
+Une sortie vide peut indiquer que le service n'envoie pas de bannière spontanée, ou que la connexion a été fermée. Une erreur de délai indique qu'aucune donnée n'a été reçue dans le temps imparti.
 
 **Erreurs fréquentes :**
 - `ConnectionRefusedError` : aucun service n'accepte la connexion à cette adresse et à ce port, ou la cible n'est pas lancée.
@@ -105,10 +105,10 @@ Une sortie vide peut indiquer que le service n'envoie pas de bannière spontané
 - N'effectue pas de scan hors du périmètre autorisé.
 
 ## Level 2 — Practice
-Suis les exercices de [`exercises.md`](exercises.md). Commence par un scan limité sur la cible locale. Note la commande, l'état des ports et les limites de l'observation.
+Suis les exercices de [`exercises.md`](exercises.md). Compte les ports ouverts du lab dans la plage 1–10000, lis la bannière du service local et effectue le scan `-F` demandé sur `scanme.nmap.org`. Respecte les limites et consignes de chaque exercice.
 
 ## Level 3 — Challenge
-Sur la cible locale uniquement, observe un service qui envoie une bannière. Explique ce que le texte permet de savoir et propose une mesure de réduction du risque. Ne publie pas la bannière ni la solution dans un fichier Markdown.
+Sur la cible locale uniquement, retrouve le flag présent dans la bannière du service du lab. Explique ce que le texte permet de savoir et propose une mesure de réduction du risque. Ne publie pas la bannière ni le flag dans le dépôt ; conserve la réponse dans tes notes personnelles.
 
 ## Résumé
 - Un port est une porte logique ; un service est le programme qui l'utilise.

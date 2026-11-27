@@ -19,12 +19,16 @@ LOGIN = "<h1>Admin</h1><form method='POST'><input name='user'><input name='pass'
 
 class H(BaseHTTPRequestHandler):
     server_version = "HACKademyHTTP/0.1"
+
     def _send(self, code, body, ctype="text/html"):
         self.send_response(code)
         self.send_header("X-Powered-By", "PythonLab/3")
         self.send_header("Content-Type", ctype + "; charset=utf-8")
         self.end_headers()
-        self.wfile.write(body.encode())
+        # HEAD doit retourner les mêmes en-têtes que GET, sans envoyer le corps.
+        if self.command != "HEAD":
+            self.wfile.write(body.encode())
+
     def do_GET(self):
         p = self.path.split("?")[0]
         if p == "/admin":
@@ -32,6 +36,11 @@ class H(BaseHTTPRequestHandler):
         if p in PAGES:
             return self._send(200, PAGES[p], "text/plain" if p != "/" else "text/html")
         self._send(404, "Not found")
+
+    def do_HEAD(self):
+        # Réutilise le routage et les en-têtes de GET ; _send omet le corps.
+        return self.do_GET()
+
     def do_POST(self):
         if self.path != "/admin":
             return self._send(404, "Not found")
@@ -40,7 +49,9 @@ class H(BaseHTTPRequestHandler):
         if d.get("user") == ["admin"] and d.get("pass") == ["admin123"]:
             return self._send(200, "Bienvenue admin. HACK{identifiants_par_defaut}")
         self._send(401, "Identifiants invalides")
-    def log_message(self, *a): pass
+
+    def log_message(self, *a):
+        pass
 
 class FTP(socketserver.BaseRequestHandler):
     def handle(self):

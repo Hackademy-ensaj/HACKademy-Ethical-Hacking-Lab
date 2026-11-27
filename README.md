@@ -1,11 +1,11 @@
 # HACKademy Ethical Hacking Lab
 
-Lab d'initiation à l'ethical hacking, **100 % WSL 1**
+Lab d'initiation à l'ethical hacking, **100 % WSL 1**.
 Tout se fait sur une cible locale (`127.0.0.1`) lancée en une commande.
 
 ## Démarrage rapide
 ```bash
-git clone https://github.com/Hackademy-ensaj./HACKademy-Ethical-Hacking-Lab.git
+git clone https://github.com/Hackademy-ensaj/HACKademy-Ethical-Hacking-Lab.git
 cd HACKademy-Ethical-Hacking-Lab
 bash setup.sh          # installe les outils
 bash start-target.sh   # lance la cible (laisser ce terminal ouvert)
@@ -24,7 +24,5 @@ Ouvre un **second terminal WSL** pour les exercices.
 Chaque module : **Learn → Practice → Challenge**.
 
 ## Règle d'or
-Ne scanner que : `127.0.0.1` (la cible du lab) et `scanme.nmap.org` (autorisé par le projet Nmap, usage raisonnable).
+Ne scanner que : `127.0.0.1` (la cible du lab) et `scanme.nmap.org` (autorisé par le projet Nmap, usage raisonnable). Les essais d'identifiants sont autorisés **uniquement sur la cible locale `127.0.0.1`**.
 Toute autre machine sans autorisation écrite est **interdite**.
-
-

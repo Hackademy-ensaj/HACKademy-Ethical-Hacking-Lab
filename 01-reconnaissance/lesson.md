@@ -3,10 +3,10 @@
 ## Level 1 — Learn
 
 ### Objectifs
-À la fin de cette leçon, tu sauras distinguer la reconnaissance passive et active, lire une adresse IP et des enregistrements DNS, utiliser `dig` et `curl`, puis repérer des informations exposées dans des en-têtes HTTP, `robots.txt` et des commentaires HTML.
+À la fin de cette leçon, tu sauras distinguer la reconnaissance passive et active, lire une adresse IP et des enregistrements DNS, utiliser `dig` et `curl`, puis repérer des informations exposées sur un serveur local.
 
 ### Prérequis
-Tu as besoin d'un terminal. Une **commande** est une instruction que tu écris pour demander une action à l'ordinateur. Dans une commande, les mots après le nom du programme sont souvent des options ou des arguments.
+Tu as besoin d'un terminal. Une **commande** est une instruction que tu écris pour demander une action à l'ordinateur. Dans une commande, les mots après le nom du programme sont souvent des options ou des arguments. La cible locale de ce module est `127.0.0.1`.
 
 ### Reconnaissance passive et active
 - **Définition :** la reconnaissance passive collecte des informations sans envoyer de requête à la cible. La reconnaissance active contacte directement la cible.
@@ -57,19 +57,19 @@ Chaque ligne correspond à un enregistrement retourné. Une réponse vide peut s
 - **Pourquoi en sécurité :** des détails inutiles aident un observateur à reconnaître un logiciel ou une mauvaise configuration.
 
 ### `curl`
-`curl` envoie des requêtes réseau et affiche la réponse. Dans ce lab, contacte seulement `127.0.0.1`; `scanme.nmap.org` est réservé aux vérifications autorisées et modérées.
+`curl` envoie des requêtes réseau et affiche la réponse. Dans ce lab, contacte seulement `127.0.0.1` ; `scanme.nmap.org` est réservé aux vérifications autorisées et modérées.
 
 ```bash
 curl -i http://127.0.0.1:8080/
 curl -s http://127.0.0.1:8080/robots.txt
-curl -I http://scanme.nmap.org
+curl -I http://127.0.0.1:8080/
 ```
 
 Explication des éléments :
 - `curl` : lance le client HTTP.
 - `-i` : affiche les en-têtes de réponse puis le contenu.
 - `-s` : mode silencieux, qui masque notamment la barre de progression. Il ne rend pas la requête anonyme.
-- `-I` : envoie une requête `HEAD`, qui demande les en-têtes sans le contenu. Certains serveurs ne l'acceptent pas. Dans ce dépôt, n'utilise pas `-I` sur la cible locale : son serveur ne gère pas `HEAD` et répond avec une erreur. Utilise `-i` en local.
+- `-I` : envoie une requête `HEAD`, qui demande les en-têtes sans le contenu. Le serveur du lab accepte cette méthode et ne renvoie pas de corps pour `HEAD`.
 - `http://...` : adresse de la ressource demandée. `127.0.0.1` désigne la machine locale ; `8080` est le port de l'application du lab.
 - `/` ou `/robots.txt` : chemin de la ressource sur le serveur.
 
@@ -80,16 +80,15 @@ Content-Type: [type de contenu]
 
 [contenu éventuel de la page]
 ```
-La première ligne indique le statut. Les lignes suivantes sont les en-têtes. Une ligne vide sépare les en-têtes du contenu. Avec `-s`, la réponse reste affichée, mais pas la barre de progression.
+La première ligne indique le statut. Les lignes suivantes sont les en-têtes. Une ligne vide sépare les en-têtes du contenu. Avec `-s`, la réponse reste affichée, mais pas la barre de progression. Une requête `HEAD` affiche les en-têtes uniquement.
 
 **Erreurs fréquentes :**
 - `Could not resolve host` : vérifie le nom et le DNS.
 - `Failed to connect` : vérifie que la cible autorisée est lancée et que l'adresse est correcte.
-- Erreur après `curl -I` en local : c'est attendu pour ce serveur. Remplace `-I` par `-i`.
 - Une réponse `404` signifie que le chemin demandé n'existe pas sur le serveur ; cela ne signifie pas que le serveur est arrêté.
 
 ### `robots.txt` et commentaires HTML
-- `robots.txt` est un fichier de consignes destiné aux robots d'indexation. Analogie : une pancarte qui indique des zones qu'un moteur de recherche devrait éviter. Ce n'est pas un contrôle d'accès : un chemin indiqué peut rester accessible.
+- `robots.txt` est un fichier de consignes destiné aux robots d'indexation. Analogie : une pancarte qui indique des zones qu'un moteur de recherche devrait éviter. Ce n'est pas un contrôle d'accès.
 - Un commentaire HTML est une note dans le code source, souvent écrite entre `<!--` et `-->`. Analogie : une note laissée dans la marge d'un document.
 - **Pourquoi en sécurité :** un fichier ou un commentaire publié par erreur peut révéler des chemins ou des détails internes. Une consigne publique ne remplace jamais une authentification.
 - **Exemple :** lire la réponse de `/robots.txt` ou le code HTML de la page d'accueil locale avec `curl -i`.
@@ -105,7 +104,7 @@ La première ligne indique le statut. Les lignes suivantes sont les en-têtes. U
 Suis les exercices de [`exercises.md`](exercises.md). Note les commandes, les observations et les questions. Ne copie pas seulement la sortie : explique ce que chaque élément signifie.
 
 ## Level 3 — Challenge
-À partir des indices publics disponibles sur la cible locale, cherche une information de développement exposée. Ne teste que `127.0.0.1`. Note ta méthode dans tes notes personnelles, sans publier de secret dans un fichier Markdown du dépôt.
+À partir des indices publics disponibles sur la cible locale, retrouve le flag des notes développeur. Ne teste que `127.0.0.1`. Note ta méthode dans tes notes personnelles, sans publier le flag ni le chemin révélateur dans les fichiers du dépôt.
 
 ## Résumé
 - La reconnaissance passive ne contacte pas directement la cible ; la reconnaissance active la contacte.
